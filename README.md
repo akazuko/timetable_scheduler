@@ -1,45 +1,44 @@
-Duration :
-==========
+# Scheduling TimeTable using Genetic Algorithm
 
-Time slot 	Encoding
---------------------
-09-10 		000
-10-11 		001
-11-12 		010
-12-13 		011
-13-14 		100
-14-15 		101
-invalid 	110
-invalid 	111
+***
 
+The idea is to leverage the power of Genetic Algorithm to solve timetable scheduling problem.
 
-Class room:
-===========
+# Steps to install
 
-Room No  Encoding
------------------
-1 		 0
-2 		 1
+Inside your virtual environment, simply do:
+```
+pip install -r requirements.txt
+```
 
+# Organization of the code ( inside src )
 
-Subjects:
-=========
+* data.py : Placeholder where data to be scheduled is kept. 
+  Now this is basically acting as the store where the data in 
+  the required format from any source can be loaded.
 
-Name   		No of classes for MCA 		No of classes for MCS 
--------------------------------------------------------------
-ALGO        7							6
-IS 			5							5
-DBMS		6							7
-CI 			7							7
-AI 			5							5
+* driver.py : Primary driver we use to prepare the timetable.
 
-Teachers
-========
+* genetic_algorithm.py : Placeholder for the Genetic Algorithm.
 
-Subject  Encoding
------------------
-ALGO	 000
-IS 		 001
-DBMS 	 010
-CI 		 011
-AI 		 100
+* populaton.py : Definition of a population is kept here
+
+* schedule.py : Definition of a schedule is kept here
+
+* utils.py : Few utility functions to facilitate better code organization
+
+* domain/ : The entities we are working with while defining a schedule
+
+    * class : (department, course, instructor, meeting_time, room)
+    * course : (name, max_number_of_students,instructors) 
+    * department : (name, courses)
+    * instructor : (name)
+    * meeting_time : (time)
+    * room : (number, seating_capacity)
+
+# Steps to run the code
+
+Once you have the virtual env activated, do the following:
+```
+cd src && python driver.py
+```
