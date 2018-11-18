@@ -9,6 +9,9 @@ CROSSOVER_RATE            = 0.9
 TOURNAMENT_SELECTION_SIZE = 3
 NUMB_OF_ELITE_SCHEDULES   = 1
 
+CLASS_NO                  = 1
+SCHEDULE_NUMBER           = 0
+
 def print_msg(msg):
   if isinstance(msg, dict):
     msg = json.dumps(msg, indent=2)
@@ -60,10 +63,23 @@ def print_data(data):
     ]
     print(",".join(_msg))
 
-def print_schedule_header():
-  print "Schedule # | Classes [dept, class, room, instructor, meeting-time] | Fitness | Conflicts"
+def print_population_schedules(population, generation_number):
+  global SCHEDULE_NUMBER
+  
+  print_msg("Generation Number: %s" % generation_number)
+  print
+  print
 
-def print_schedule(schedules):
+  _schedules = []
+  for x in population.schedules:
+    _schedules.append([
+      SCHEDULE_NUMBER,
+      str(x),
+      x.fitness,
+      x.number_of_conflicts
+    ])
+    SCHEDULE_NUMBER += 1
+
   headers = [
     "Schedule #", 
     "Classes [dept, class, room, instructor, meeting-time]", 
@@ -71,37 +87,97 @@ def print_schedule(schedules):
     "Conflicts"
   ]
 
-  print(tabulate(schedules, headers=headers))
+  print(tabulate(_schedules, headers=headers))
+
+def print_schedule_as_table(data, schedule, generation):
+  global CLASS_NO
+  
+  _classes = schedule.classes
+  _headers = [
+    "Class #",
+    "Dept",
+    "Course (number, max # of students)",
+    "Room (capacity)",
+    "Instructor (Id)",
+    "Meeting Time"
+  ]
+
+  table_data = []
+  for _class in _classes:
+    major_idx = -1
+    for idx, _dept in enumerate(data.depts):
+      if _dept.name == _class.department.name:
+        major_idx = idx
+
+    course_idx = -1
+    for idx, _course in enumerate(data.courses):
+      if _course.name == _class.course.name:
+        course_idx = idx
+    
+    room_idx = -1
+    for idx, _room in enumerate(data.rooms):
+      if _room.number == _class.room.number:
+        room_idx = idx
+    
+    instructor_idx = -1
+    for idx, _instructor in enumerate(data.instructors):
+      if _instructor.id == _class.instructor.id:
+        instructor_idx = idx 
+    
+    meeting_time_idx = -1
+    for idx, _meeting_time in enumerate(data.meeting_times):
+      if _meeting_time.id == _class.meeting_time.id:
+        meeting_time_idx = idx
+
+    table_data.append([
+      CLASS_NO,
+      data.depts[major_idx].name,
+      "%s (%s, %s)" % (data.courses[course_idx].name, data.courses[course_idx].number, _class.course.max_number_of_students),
+      "%s (%s)" % (data.rooms[room_idx].number, _class.room.seating_capacity),
+      "%s (%s)" % (data.instructors[instructor_idx].name, data.instructors[instructor_idx].id),
+      "%s (%s)" % (data.meeting_times[meeting_time_idx].time, data.meeting_times[meeting_time_idx].id)
+    ])
+    CLASS_NO += 1
+
+  print
+  print(tabulate(table_data, headers=_headers))
+  print
+
+  if schedule.fitness == 1:
+    print_msg("Solution Found in %s generations" % generation + 1)
 
 def run():
+  global SCHEDULE_NUMBER, CLASS_NO
+
   from data import Data
   from genetic_algorithm import GeneticAlgorithm
   from population import Population
 
   generation_number = 0
-  schedule_number   = 0
-
   data = Data()
   _genetic_algorithm = GeneticAlgorithm(data=data)
   _population = Population(size=POPULATION_SIZE, data=data).sort_by_fitness()
 
-  print_msg("Generation Number: %s" % generation_number)
+  print_data(data=data)
   print
   print
+
+  SCHEDULE_NUMBER = 0
+  print_population_schedules(population=_population, generation_number=generation_number)
   
-  _schedules = []
-  for x in _population.schedules:
-    _schedules.append([
-      schedule_number,
-      str(x),
-      x.fitness,
-      x.number_of_conflicts
-    ])
-    schedule_number += 1
-  print_schedule(schedules=_schedules)
+  CLASS_NO = 1
+  print_schedule_as_table(data=data, schedule=_population.schedules[0], generation=generation_number)
 
-  # print_data(data=data)
+  while _population.schedules[0].fitness != 1.0:
+    generation_number += 1
+    _population = _genetic_algorithm.evolve(population=_population).sort_by_fitness()
 
+    SCHEDULE_NUMBER = 0
+    print_population_schedules(population=_population, generation_number=generation_number)
+
+    CLASS_NO = 1
+    print_schedule_as_table(data=data, schedule=_population.schedules[0], generation=generation_number)
+    
 if __name__ == '__main__' and __package__ is None:
   sys.path.insert(0, path.dirname(path.abspath(__file__)))
   run()
