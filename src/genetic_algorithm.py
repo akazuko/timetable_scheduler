@@ -1,10 +1,10 @@
 from copy import deepcopy
 from random import random
 
-from .population import Population
-from .schedule import Schedule
+from population import Population
+from schedule import Schedule
 
-from .driver import NUMB_OF_ELITE_SCHEDULES, CROSSOVER_RATE, TOURNAMENT_SELECTION_SIZE, MUTATION_RATE
+from driver import NUMB_OF_ELITE_SCHEDULES, CROSSOVER_RATE, TOURNAMENT_SELECTION_SIZE, MUTATION_RATE
 
 class GeneticAlgorithm(object):
   def __init__(self, data):

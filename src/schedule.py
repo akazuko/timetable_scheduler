@@ -13,7 +13,7 @@ class Schedule(object):
     self.is_fitness_changed = True
   
   def __str__(self):
-    return ",".join([str(x) for x in self._classes])
+    return "\n".join([str(x) for x in self._classes])
 
   @property
   def fitness(self):
@@ -42,6 +42,8 @@ class Schedule(object):
     for dept in self.data.depts:
       for course in dept.courses:
         _create_class(self, course, dept)
+
+    return self
 
   def calculate_fitness(self):
     number_of_conflicts = 0

@@ -1,4 +1,6 @@
 import json
+from tabulate import tabulate
+
 from os import sys, path
 
 POPULATION_SIZE           = 9
@@ -58,8 +60,48 @@ def print_data(data):
     ]
     print(",".join(_msg))
 
+def print_schedule_header():
+  print "Schedule # | Classes [dept, class, room, instructor, meeting-time] | Fitness | Conflicts"
+
+def print_schedule(schedules):
+  headers = [
+    "Schedule #", 
+    "Classes [dept, class, room, instructor, meeting-time]", 
+    "Fitness", 
+    "Conflicts"
+  ]
+
+  print(tabulate(schedules, headers=headers))
+
+def run():
+  from data import Data
+  from genetic_algorithm import GeneticAlgorithm
+  from population import Population
+
+  generation_number = 0
+  schedule_number   = 0
+
+  data = Data()
+  _genetic_algorithm = GeneticAlgorithm(data=data)
+  _population = Population(size=POPULATION_SIZE, data=data).sort_by_fitness()
+
+  print_msg("Generation Number: %s" % generation_number)
+  print
+  print
+  
+  _schedules = []
+  for x in _population.schedules:
+    _schedules.append([
+      schedule_number,
+      str(x),
+      x.fitness,
+      x.number_of_conflicts
+    ])
+    schedule_number += 1
+  print_schedule(schedules=_schedules)
+
+  # print_data(data=data)
+
 if __name__ == '__main__' and __package__ is None:
   sys.path.insert(0, path.dirname(path.abspath(__file__)))
-  from data import Data
-  data = Data()
-  print_data(data=data)
+  run()
