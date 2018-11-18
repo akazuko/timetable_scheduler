@@ -1,5 +1,5 @@
 from copy import deepcopy
-from random import random
+from utils import get_random_number
 
 from population import Population
 from schedule import Schedule
@@ -16,12 +16,12 @@ class GeneticAlgorithm(object):
   def crossover_population(self, population):
     _cross_over_popluation = Population(size=len(population.schedules), data=self.data)
     for idx in range(NUMB_OF_ELITE_SCHEDULES):
-      _cross_over_popluation.schedules[idx] = deepcopy(population.schedule[idx])
+      _cross_over_popluation.schedules[idx] = deepcopy(population.schedules[idx])
     
     for idx in range(NUMB_OF_ELITE_SCHEDULES, len(population.schedules)):
-      if CROSSOVER_RATE > random():
+      if CROSSOVER_RATE > get_random_number():
         schedule1 = self.select_tournament_population(population).sort_by_fitness().schedules[0]
-        schedule2 = self.select_tournament_population(population).sort_by_fitness().schedules[0]
+        schedule2 = self.select_tournament_population(population).sort_by_fitness().schedules[1]
         _cross_over_popluation.schedules[idx] = self.crossover_schedule(schedule1, schedule2)
       else:
         _cross_over_popluation.schedules[idx] = deepcopy(population.schedules[idx])
@@ -31,7 +31,7 @@ class GeneticAlgorithm(object):
   def crossover_schedule(self, schedule1, schedule2):
     _crossover_schedule = Schedule(data=self.data).initialize()
     for idx in range(len(_crossover_schedule.classes)):
-      if random() > 0.5:
+      if get_random_number() > 0.5:
         _crossover_schedule.classes[idx] = deepcopy(schedule1.classes[idx])
       else:
         _crossover_schedule.classes[idx] = deepcopy(schedule2.classes[idx])
@@ -57,7 +57,7 @@ class GeneticAlgorithm(object):
     _schedule = Schedule(data=self.data).initialize()
 
     for idx in range(len(_mutate_schedule.classes)):
-      if MUTATION_RATE > random():
+      if MUTATION_RATE > get_random_number():
         _mutate_schedule.classes[idx] = deepcopy(_schedule.classes[idx])
     
     return _mutate_schedule
@@ -65,6 +65,6 @@ class GeneticAlgorithm(object):
   def select_tournament_population(self, population):
     tournament_population = Population(size=TOURNAMENT_SELECTION_SIZE, data=self.data)
     for idx in range(TOURNAMENT_SELECTION_SIZE):
-      tournament_population.schedules[idx] = population.schedules[int(random() * len(population.schedules))]
+      tournament_population.schedules[idx] = population.schedules[int(get_random_number() * len(population.schedules))]
     
     return tournament_population

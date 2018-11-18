@@ -1,4 +1,4 @@
-from random import random
+from utils import get_random_number
 from copy import deepcopy
 
 from domain import Class
@@ -33,9 +33,9 @@ class Schedule(object):
       _class = Class(id=self.class_number, department=dept, course=course)
       self.class_number += 1
 
-      _class.meeting_time = deepcopy(self.data.meeting_times[int(len(self.data.meeting_times) * random())])
-      _class.room = deepcopy(self.data.rooms[int(len(self.data.rooms) * random())])
-      _class.instructor = deepcopy(self.data.instructors[int(len(self.data.instructors) * random())])
+      _class.meeting_time = deepcopy(self.data.meeting_times[int(len(self.data.meeting_times) * get_random_number())])
+      _class.room = deepcopy(self.data.rooms[int(len(self.data.rooms) * get_random_number())])
+      _class.instructor = deepcopy(self.data.instructors[int(len(self.data.instructors) * get_random_number())])
 
       self._classes.append(_class)
 
@@ -63,4 +63,4 @@ class Schedule(object):
 
     self.number_of_conflicts = number_of_conflicts
     
-    return (1/(0.1*(self.number_of_conflicts + 1)))
+    return (1/(1.0*(self.number_of_conflicts + 1)))
